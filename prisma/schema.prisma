@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  plan      String   @default("free") // free, pro, enterprise
+  credits   Int      @default(100)   // monthly credits
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  apiKeys   ApiKey[]
+  requests  Request[]
+  
+  @@map("users")
+}
+
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  name      String
+  userId    String
+  isActive  Boolean  @default(true)
+  lastUsed  DateTime?
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests  Request[]
+  
+  @@map("api_keys")
+}
+
+model Request {
+  id            String   @id @default(uuid())
+  userId        String
+  apiKeyId      String
+  url           String
+  type          String   // screenshot, pdf
+  options       String   // JSON string of options
+  status        String   // pending, processing, completed, failed
+  filePath      String?
+  fileSize      Int?
+  processingTime Int?    // milliseconds
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  completedAt   DateTime?
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKey        ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  
+  @@map("requests")
+}
+
+model Usage {
+  id        String   @id @default(uuid())
+  userId    String
+  month     String   // YYYY-MM format
+  requests  Int      @default(0)
+  credits   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, month])
+  @@map("usage")
+}

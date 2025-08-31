@@ -1,0 +1,764 @@
+{
+  "info": {
+    "name": "Screenshot API SaaS",
+    "description": "Complete API collection for Screenshot SaaS service powered by Playwright. Generate high-quality screenshots and PDFs from web pages with advanced customization options.\n\n## Features\n- 🖼️ Screenshot capture (PNG, JPEG, WebP)\n- 📄 PDF generation\n- 🔐 JWT Authentication\n- 🔑 API Key management\n- 📊 Usage tracking\n- 🚦 Rate limiting\n- 📱 Device simulation\n- 🌐 Multi-browser support\n\n## Getting Started\n1. Register a new user account\n2. Use the returned API key for screenshot requests\n3. Monitor your usage and credits\n\n## Base URL\n`{{baseUrl}}`\n\n## Environment Variables\nSet these variables in your Postman environment:\n- `baseUrl`: http://localhost:3000/api\n- `jwt_token`: (automatically set after login)\n- `api_key`: (automatically set after registration)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_uid": "screenshot-api-saas"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "description": "User registration, login, and profile management endpoints",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.environment.set('api_key', response.apiKey);",
+                  "    pm.test('User registered successfully', function () {",
+                  "        pm.expect(response.user.email).to.be.a('string');",
+                  "        pm.expect(response.token).to.be.a('string');",
+                  "        pm.expect(response.apiKey).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Registration failed', function () {",
+                  "        pm.response.to.have.status.oneOf([400, 409]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"securepassword123\",\n    \"name\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account. Returns JWT token and default API key.\n\n**Required Fields:**\n- `email`: Valid email address\n- `password`: Minimum 8 characters\n- `name`: Minimum 2 characters\n\n**Response:**\n- User details\n- JWT token for authentication\n- Default API key for screenshot requests\n- 100 free credits"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"securepassword123\",\n    \"name\": \"John Doe\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"message\": \"User created successfully\",\n    \"user\": {\n        \"id\": \"clm123abc\",\n        \"email\": \"user@example.com\",\n        \"name\": \"John Doe\",\n        \"plan\": \"free\",\n        \"credits\": 100,\n        \"createdAt\": \"2024-01-15T10:30:00.000Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"apiKey\": \"sk_1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.expect(response.user.email).to.be.a('string');",
+                  "        pm.expect(response.token).to.be.a('string');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user with email and password.\n\n**Required Fields:**\n- `email`: User's email address\n- `password`: User's password\n\n**Response:**\n- User details\n- JWT token (valid for 24 hours)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Profile retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.user).to.be.an('object');",
+                  "    pm.expect(response.user.apiKeys).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Get current user profile including API keys.\n\n**Headers:**\n- `Authorization`: Bearer JWT token\n\n**Response:**\n- User details\n- List of API keys\n- Usage statistics"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🔑 API Key Management",
+      "description": "Create and manage API keys for accessing screenshot endpoints",
+      "item": [
+        {
+          "name": "Create API Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('API key created successfully', function () {",
+                  "        pm.expect(response.apiKey.key).to.be.a('string');",
+                  "        pm.expect(response.apiKey.name).to.be.a('string');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Production Key\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/api-keys",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "api-keys"]
+            },
+            "description": "Create a new API key for screenshot requests.\n\n**Required Fields:**\n- `name`: Descriptive name for the API key (min 2 characters)\n\n**Response:**\n- API key details including the secret key"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete API Key",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/api-keys/{{api_key_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "api-keys", "{{api_key_id}}"]
+            },
+            "description": "Delete an API key.\n\n**Path Parameters:**\n- `api_key_id`: ID of the API key to delete\n\n**Note:** You cannot delete your last remaining API key."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📸 Screenshots",
+      "description": "Capture screenshots with various options and formats",
+      "item": [
+        {
+          "name": "Basic Screenshot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Screenshot taken successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.screenshot.filePath).to.be.a('string');",
+                  "    pm.expect(response.screenshot.size).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"png\",\n    \"width\": 1920,\n    \"height\": 1080\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots"]
+            },
+            "description": "Take a basic screenshot of a webpage.\n\n**Required:**\n- `url`: Target webpage URL\n\n**Optional:**\n- `format`: png, jpeg, webp (default: png)\n- `width`: Viewport width (default: 1920)\n- `height`: Viewport height (default: 1080)\n- `quality`: 1-100 for JPEG (default: 80)"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "sk_example_key"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"png\",\n    \"width\": 1920,\n    \"height\": 1080\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/screenshots",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["screenshots"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"success\": true,\n    \"screenshot\": {\n        \"filename\": \"screenshot_abc123.png\",\n        \"filePath\": \"/uploads/screenshot_abc123.png\",\n        \"size\": 125843,\n        \"format\": \"png\",\n        \"dimensions\": {\n            \"width\": 1920,\n            \"height\": 1080\n        },\n        \"fullPage\": false,\n        \"selector\": null\n    },\n    \"processingTime\": 2156,\n    \"creditsRemaining\": 99\n}"
+            }
+          ]
+        },
+        {
+          "name": "Full Page Screenshot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"png\",\n    \"fullPage\": true,\n    \"waitFor\": 2000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots"]
+            },
+            "description": "Capture the entire webpage including content below the fold.\n\n**Key Options:**\n- `fullPage`: true - Captures entire page height\n- `waitFor`: Wait time in milliseconds before capture\n- `scrollToBottom`: Auto-scroll to ensure all content loads"
+          },
+          "response": []
+        },
+        {
+          "name": "Element Screenshot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"selector\": \"#main-content\",\n    \"format\": \"png\",\n    \"waitFor\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots"]
+            },
+            "description": "Capture a specific element on the page using CSS selector.\n\n**Key Options:**\n- `selector`: CSS selector for target element\n- `waitFor`: Wait for element to load\n\n**Example Selectors:**\n- `#header` - Element with ID 'header'\n- `.main-content` - Element with class 'main-content'\n- `div.article` - Div with class 'article'"
+          },
+          "response": []
+        },
+        {
+          "name": "Mobile Device Screenshot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"device\": \"iPhone 12\",\n    \"format\": \"png\",\n    \"fullPage\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots"]
+            },
+            "description": "Capture screenshot using device presets for responsive testing.\n\n**Available Devices:**\n- `iPhone 12`: 390×844, 3x scale\n- `iPad Pro`: 1024×1366, 2x scale  \n- `Pixel 5`: 393×851, 2.75x scale\n- `Desktop HD`: 1920×1080, 1x scale\n- `Desktop 4K`: 3840×2160, 2x scale"
+          },
+          "response": []
+        },
+        {
+          "name": "Advanced Screenshot Options",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"jpeg\",\n    \"quality\": 90,\n    \"width\": 1920,\n    \"height\": 1080,\n    \"fullPage\": false,\n    \"waitFor\": 3000,\n    \"browser\": \"chromium\",\n    \"scrollToBottom\": false,\n    \"hideElements\": [\".ads\", \"#cookie-banner\", \".popup\"],\n    \"timeout\": 30000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots"]
+            },
+            "description": "Advanced screenshot with all available options.\n\n**All Options:**\n- `browser`: chromium, firefox, webkit\n- `hideElements`: Array of CSS selectors to hide\n- `scrollToBottom`: Auto-scroll before capture\n- `timeout`: Maximum wait time (5000-60000ms)\n- `quality`: JPEG quality 1-100"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📄 PDF Generation",
+      "description": "Generate PDF files from web pages with customizable options",
+      "item": [
+        {
+          "name": "Basic PDF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('PDF generated successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.success).to.be.true;",
+                  "    pm.expect(response.pdf.filePath).to.be.a('string');",
+                  "    pm.expect(response.pdf.format).to.equal('pdf');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"A4\",\n    \"landscape\": false,\n    \"printBackground\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots", "pdf"]
+            },
+            "description": "Generate a basic PDF from a webpage.\n\n**Required:**\n- `url`: Target webpage URL\n\n**Optional:**\n- `format`: A4, A3, A5, Letter, Legal, Tabloid (default: A4)\n- `landscape`: true/false (default: false)\n- `printBackground`: Include background colors/images (default: true)"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "sk_example_key"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"A4\",\n    \"landscape\": false,\n    \"printBackground\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/screenshots/pdf",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["screenshots", "pdf"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"success\": true,\n    \"pdf\": {\n        \"filename\": \"pdf_xyz789.pdf\",\n        \"filePath\": \"/uploads/pdf_xyz789.pdf\",\n        \"size\": 256743,\n        \"format\": \"pdf\",\n        \"options\": {\n            \"format\": \"A4\",\n            \"landscape\": false,\n            \"printBackground\": true,\n            \"margin\": {\n                \"top\": \"1cm\",\n                \"bottom\": \"1cm\",\n                \"left\": \"1cm\",\n                \"right\": \"1cm\"\n            }\n        }\n    },\n    \"processingTime\": 3421,\n    \"creditsRemaining\": 98\n}"
+            }
+          ]
+        },
+        {
+          "name": "Custom PDF Options",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"url\": \"https://example.com\",\n    \"format\": \"Letter\",\n    \"landscape\": true,\n    \"printBackground\": true,\n    \"margin\": {\n        \"top\": \"2cm\",\n        \"bottom\": \"2cm\",\n        \"left\": \"1.5cm\",\n        \"right\": \"1.5cm\"\n    },\n    \"scale\": 0.8,\n    \"waitFor\": 2000,\n    \"timeout\": 45000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/screenshots/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots", "pdf"]
+            },
+            "description": "Generate PDF with custom options.\n\n**Advanced Options:**\n- `margin`: Custom margins (top, bottom, left, right)\n- `scale`: Scale factor 0.1-2.0 (default: 1.0)\n- `waitFor`: Wait time before PDF generation\n- `timeout`: Maximum processing time\n\n**Page Formats:**\n- A4: 210 × 297 mm\n- Letter: 8.5 × 11 inches\n- Legal: 8.5 × 14 inches"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Usage & Analytics",
+      "description": "Track API usage, request history, and credit consumption",
+      "item": [
+        {
+          "name": "Get Request History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('History retrieved successfully', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.requests).to.be.an('array');",
+                  "    pm.expect(response.pagination).to.be.an('object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/screenshots/history?page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots", "history"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Results per page (default: 50, max: 100)"
+                },
+                {
+                  "key": "type",
+                  "value": "screenshot",
+                  "description": "Filter by type: screenshot, pdf",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "completed",
+                  "description": "Filter by status: pending, processing, completed, failed",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get paginated request history with optional filters.\n\n**Query Parameters:**\n- `page`: Page number (default: 1)\n- `limit`: Results per page (max: 100)\n- `type`: Filter by screenshot/pdf\n- `status`: Filter by request status\n\n**Response:**\n- Array of requests with details\n- Pagination information"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "sk_example_key"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/screenshots/history?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["screenshots", "history"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"requests\": [\n        {\n            \"id\": \"req_123\",\n            \"url\": \"https://example.com\",\n            \"type\": \"screenshot\",\n            \"status\": \"completed\",\n            \"filePath\": \"/uploads/screenshot_abc123.png\",\n            \"fileSize\": 125843,\n            \"processingTime\": 2156,\n            \"errorMessage\": null,\n            \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n            \"completedAt\": \"2024-01-15T10:30:02.156Z\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"limit\": 10,\n        \"total\": 25,\n        \"pages\": 3\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Usage Statistics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Usage statistics retrieved', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.month).to.be.a('string');",
+                  "    pm.expect(response.requests).to.be.a('number');",
+                  "    pm.expect(response.creditsRemaining).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/screenshots/usage",
+              "host": ["{{baseUrl}}"],
+              "path": ["screenshots", "usage"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2024-01",
+                  "description": "Specific month in YYYY-MM format (default: current month)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get usage statistics for current or specific month.\n\n**Query Parameters:**\n- `month`: YYYY-MM format (default: current month)\n\n**Response:**\n- Request count for the month\n- Credits consumed\n- Remaining credits"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏥 Health & Status",
+      "description": "Health check and system status endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check passed', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.status).to.equal('OK');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/../health",
+              "host": ["{{baseUrl}}"],
+              "path": ["..", "health"]
+            },
+            "description": "Check if the API service is running and healthy.\n\n**No authentication required.**\n\n**Response:**\n- Service status\n- Current timestamp"
+          },
+          "response": [
+            {
+              "name": "Healthy Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/health",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n    \"status\": \"OK\",\n    \"timestamp\": \"2024-01-15T10:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('Making request to:', pm.request.url.toString());"
+        ]
+      }
+    }
+  ]
+}

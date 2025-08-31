@@ -1,0 +1,56 @@
+{
+  "id": "screenshot-api-environment",
+  "name": "Screenshot API - Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "default",
+      "enabled": true,
+      "description": "Base URL for the Screenshot API"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true,
+      "description": "JWT token for authentication (auto-populated after login)"
+    },
+    {
+      "key": "api_key",
+      "value": "",
+      "type": "secret",
+      "enabled": true,
+      "description": "API key for screenshot requests (auto-populated after registration)"
+    },
+    {
+      "key": "api_key_id",
+      "value": "",
+      "type": "default",
+      "enabled": true,
+      "description": "ID of API key for deletion operations"
+    },
+    {
+      "key": "test_email",
+      "value": "test@example.com",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user email for registration/login"
+    },
+    {
+      "key": "test_password",
+      "value": "testpassword123",
+      "type": "secret",
+      "enabled": true,
+      "description": "Test user password"
+    },
+    {
+      "key": "test_name",
+      "value": "Test User",
+      "type": "default",
+      "enabled": true,
+      "description": "Test user name"
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
