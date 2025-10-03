@@ -1,6 +1,5 @@
-import * as bcrypt from "bcrypt";
 import { create, verify, getNumericDate } from "jwt";
-import { encodeBase64 } from "@std/encoding/base64";
+import { encodeBase64, decodeBase64 } from "@std/encoding/base64";
 
 const JWT_SECRET = Deno.env.get("JWT_SECRET") || "your-secret-key";
 let _key: CryptoKey | null = null;
@@ -19,11 +18,47 @@ async function getJWTKey(): Promise<CryptoKey> {
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  return await bcrypt.hash(password, 10);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const passwordBytes = new TextEncoder().encode(password);
+  const saltedPassword = new Uint8Array(salt.length + passwordBytes.length);
+  saltedPassword.set(salt);
+  saltedPassword.set(passwordBytes, salt.length);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", saltedPassword);
+  const hashArray = new Uint8Array(hashBuffer);
+
+  // Combine salt and hash
+  const combined = new Uint8Array(salt.length + hashArray.length);
+  combined.set(salt);
+  combined.set(hashArray, salt.length);
+
+  return encodeBase64(combined);
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return await bcrypt.compare(password, hash);
+  try {
+    const combined = decodeBase64(hash);
+    const salt = combined.slice(0, 16);
+    const storedHash = combined.slice(16);
+
+    const passwordBytes = new TextEncoder().encode(password);
+    const saltedPassword = new Uint8Array(salt.length + passwordBytes.length);
+    saltedPassword.set(salt);
+    saltedPassword.set(passwordBytes, salt.length);
+
+    const hashBuffer = await crypto.subtle.digest("SHA-256", saltedPassword);
+    const newHash = new Uint8Array(hashBuffer);
+
+    // Compare hashes
+    if (newHash.length !== storedHash.length) return false;
+    let isEqual = true;
+    for (let i = 0; i < newHash.length; i++) {
+      if (newHash[i] !== storedHash[i]) isEqual = false;
+    }
+    return isEqual;
+  } catch {
+    return false;
+  }
 }
 
 export async function generateJWT(payload: Record<string, unknown>): Promise<string> {
