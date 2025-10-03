@@ -177,7 +177,7 @@ const Docs = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-64">
+        <div className="p-4 sm:p-6 lg:p-8">
           {/* Mobile Menu Button */}
           <div className="lg:hidden mb-4">
             <button
@@ -192,11 +192,8 @@ const Docs = () => {
           <div className="max-w-4xl mx-auto lg:max-w-none lg:mx-0">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Book className="h-8 w-8 text-primary-600" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">API Documentation</h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">API Documentation</h1>
+          <p className="text-gray-600 dark:text-gray-300">
             Complete guide to using the ScreenAPI for capturing screenshots and generating PDFs
           </p>
         </div>

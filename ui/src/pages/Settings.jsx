@@ -604,7 +604,7 @@ const Settings = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 lg:ml-64 pt-20 lg:pt-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           <div className="max-w-4xl mx-auto lg:max-w-none lg:mx-0">
             {/* Header */}
             <div className="mb-8">

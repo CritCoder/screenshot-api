@@ -119,7 +119,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-none">
+    <div className="p-4 sm:p-6 lg:p-8 w-full max-w-none">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Welcome back, {user?.name}!
@@ -171,7 +171,28 @@ const Dashboard = () => {
                     const TypeIcon = getTypeIcon(request.type);
                     return (
                       <div key={index} className="flex items-center space-x-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg">
-                        <TypeIcon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                        {/* Thumbnail for completed screenshots */}
+                        {request.status === 'completed' && request.type === 'screenshot' && request.filePath ? (
+                          <div className="flex-shrink-0 w-16 h-12 bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
+                            <img 
+                              src={`http://localhost:3000${request.filePath}`}
+                              alt="Screenshot thumbnail"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
+                              <TypeIcon className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex-shrink-0 p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                            <TypeIcon className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+                          </div>
+                        )}
+                        
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                             {request.url}

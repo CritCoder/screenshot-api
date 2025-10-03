@@ -136,7 +136,7 @@ const ApiKeys = () => {
   }
 
   return (
-    <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-none">
+    <div className="p-4 sm:p-6 lg:p-8 w-full max-w-none">
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>

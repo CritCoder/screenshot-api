@@ -142,7 +142,7 @@ const History = () => {
   }
 
   return (
-    <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-none">
+    <div className="p-4 sm:p-6 lg:p-8 w-full max-w-none">
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Request History</h1>
@@ -251,11 +251,31 @@ const History = () => {
                   <div key={index} className="p-6 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-4 flex-1">
-                        <div className="flex-shrink-0">
-                          <div className={`p-2 rounded-md ${getTypeColor(request.type)}`}>
-                            <TypeIcon className="h-5 w-5" />
+                        {/* Thumbnail for completed screenshots */}
+                        {request.status === 'completed' && request.type === 'screenshot' && request.filePath ? (
+                          <div className="flex-shrink-0 w-20 h-16 bg-gray-100 rounded-md overflow-hidden">
+                            <img 
+                              src={`http://localhost:3000${request.filePath}`}
+                              alt="Screenshot thumbnail"
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-full h-full flex items-center justify-center" style={{ display: 'none' }}>
+                              <div className={`p-2 rounded-md ${getTypeColor(request.type)}`}>
+                                <TypeIcon className="h-5 w-5" />
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="flex-shrink-0">
+                            <div className={`p-2 rounded-md ${getTypeColor(request.type)}`}>
+                              <TypeIcon className="h-5 w-5" />
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2 mb-2">

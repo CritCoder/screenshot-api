@@ -103,6 +103,18 @@ class CleanupService {
 
   async cleanupOrphanedFiles() {
     try {
+      // Check if upload directory exists, create it if it doesn't
+      try {
+        await fs.access(this.uploadDir);
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          await fs.mkdir(this.uploadDir, { recursive: true });
+          logger.info(`Created upload directory: ${this.uploadDir}`);
+          return; // No files to clean up in a newly created directory
+        }
+        throw error;
+      }
+
       const files = await fs.readdir(this.uploadDir);
       const cutoffTime = new Date(Date.now() - this.maxFileAge);
 
@@ -148,6 +160,20 @@ class CleanupService {
 
   async getStorageStats() {
     try {
+      // Check if upload directory exists
+      try {
+        await fs.access(this.uploadDir);
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          return {
+            fileCount: 0,
+            totalSize: 0,
+            totalSizeMB: '0.00'
+          };
+        }
+        throw error;
+      }
+
       const files = await fs.readdir(this.uploadDir);
       let totalSize = 0;
       let fileCount = 0;

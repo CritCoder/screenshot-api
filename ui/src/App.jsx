@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -65,12 +65,9 @@ function AppContent() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <Dashboard />
-                    </div>
-                  </div>
+                  <Layout>
+                    <Dashboard />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -78,12 +75,9 @@ function AppContent() {
               path="/playground"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <Playground />
-                    </div>
-                  </div>
+                  <Layout>
+                    <Playground />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -91,12 +85,9 @@ function AppContent() {
               path="/api-keys"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <ApiKeys />
-                    </div>
-                  </div>
+                  <Layout>
+                    <ApiKeys />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -104,12 +95,9 @@ function AppContent() {
               path="/history"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <History />
-                    </div>
-                  </div>
+                  <Layout>
+                    <History />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -117,12 +105,9 @@ function AppContent() {
               path="/docs"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <Docs />
-                    </div>
-                  </div>
+                  <Layout>
+                    <Docs />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -130,12 +115,9 @@ function AppContent() {
               path="/settings"
               element={
                 <ProtectedRoute>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <div className="pt-16 flex-1">
-                      <Settings />
-                    </div>
-                  </div>
+                  <Layout>
+                    <Settings />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
