@@ -39,6 +39,9 @@ app.use('/api/', apiLimiter);
 // Serve static files (uploaded screenshots)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, '../ui/dist')));
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
@@ -48,9 +51,9 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/screenshots', screenshotRoutes);
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../ui/dist/index.html'));
 });
 
 // Error handler
