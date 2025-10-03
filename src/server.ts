@@ -134,6 +134,12 @@ async function handleAuth(req: Request): Promise<Response> {
     return await handleGetProfile(req);
   }
 
+  if (req.method === "GET" && path === "/test") {
+    return new Response(JSON.stringify({ message: "Auth API is working" }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return new Response(JSON.stringify({ error: "Auth endpoint not found" }), {
     status: 404,
     headers: { "Content-Type": "application/json" },
@@ -166,50 +172,61 @@ async function handleScreenshots(req: Request): Promise<Response> {
 
 // Auth handlers
 async function handleRegister(req: Request): Promise<Response> {
-  const validation = await parseJsonBody(req, registerSchema);
-  if (!validation.success) {
-    return new Response(JSON.stringify({ error: validation.error }), {
-      status: 400,
+  try {
+    const validation = await parseJsonBody(req, registerSchema);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { email, password, name } = validation.data;
+
+    // Check if user already exists
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return new Response(JSON.stringify({ error: "User already exists" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Create user
+    const hashedPassword = await hashPassword(password);
+    const user = await createUser({
+      email,
+      password: hashedPassword,
+      name,
+      plan: "free",
+      credits: 100,
+    });
+
+    // Generate JWT
+    const token = await generateJWT({ userId: user.id, email: user.email });
+
+    return new Response(JSON.stringify({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        plan: user.plan,
+        credits: user.credits,
+      },
+      token,
+    }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    return new Response(JSON.stringify({
+      error: "Registration failed",
+      details: error.message
+    }), {
+      status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  const { email, password, name } = validation.data;
-
-  // Check if user already exists
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
-    return new Response(JSON.stringify({ error: "User already exists" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  // Create user
-  const hashedPassword = await hashPassword(password);
-  const user = await createUser({
-    email,
-    password: hashedPassword,
-    name,
-    plan: "free",
-    credits: 100,
-  });
-
-  // Generate JWT
-  const token = await generateJWT({ userId: user.id, email: user.email });
-
-  return new Response(JSON.stringify({
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      plan: user.plan,
-      credits: user.credits,
-    },
-    token,
-  }), {
-    headers: { "Content-Type": "application/json" },
-  });
 }
 
 async function handleLogin(req: Request): Promise<Response> {
