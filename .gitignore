@@ -1,10 +1,45 @@
-node_modules/
+# Deno
+.deno/
+*.lock
+
+# Environment files
 .env
-uploads/
+.env.local
+.env.production
+.env.deno
+
+# Node.js (legacy files)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Vercel
+.vercel/
+
+# Logs
+logs/
+*.log
+
+# Database
 *.db
 *.db-journal
+*.sqlite
+
+# Uploads
+uploads/
+
+# Build directories
 dist/
 build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
-logs/
-.vercel
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
