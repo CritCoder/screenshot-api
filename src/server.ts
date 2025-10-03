@@ -13,7 +13,7 @@ function addCorsHeaders(response: Response): Response {
     headers,
   });
 }
-import { createUser, getUserByEmail, getUserById, createApiKey, createScreenshotRequest, getUserScreenshots, getApiKeyByKey, getUserApiKeys } from "./db/kv.ts";
+import { createUser, getUserByEmail, getUserById, createApiKey, createScreenshotRequest, getUserScreenshots, getApiKeyByKey, getUserApiKeys, deleteApiKey } from "./db/kv.ts";
 import { hashPassword, verifyPassword, generateJWT, authenticateRequest, generateApiKey } from "./utils/auth.ts";
 import { parseJsonBody, registerSchema, loginSchema, screenshotSchema } from "./utils/validation.ts";
 
@@ -134,6 +134,18 @@ async function handleAuth(req: Request): Promise<Response> {
     return await handleGetProfile(req);
   }
 
+  if (req.method === "GET" && path === "/profile") {
+    return await handleGetProfile(req); // Same as /me for now
+  }
+
+  if (req.method === "POST" && path === "/api-keys") {
+    return await handleCreateApiKey(req);
+  }
+
+  if (req.method === "DELETE" && path.startsWith("/api-keys/")) {
+    const apiKeyId = path.split("/")[2];
+    return await handleDeleteApiKey(req, apiKeyId);
+  }
 
   return new Response(JSON.stringify({ error: "Auth endpoint not found" }), {
     status: 404,
@@ -335,6 +347,101 @@ async function handleGetProfile(req: Request): Promise<Response> {
   }), {
     headers: { "Content-Type": "application/json" },
   });
+}
+
+// API Key management handlers
+async function handleCreateApiKey(req: Request): Promise<Response> {
+  const auth = await authenticateRequest(req);
+  if (!auth) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    const body = await req.json();
+    const { name } = body;
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return new Response(JSON.stringify({ error: "API key name is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Generate API key
+    const apiKeyData = await generateApiKey();
+    const apiKey = await createApiKey({
+      userId: auth.userId,
+      name: name.trim(),
+      key: apiKeyData,
+      isActive: true,
+    });
+
+    return new Response(JSON.stringify({
+      apiKey: {
+        id: apiKey.id,
+        name: apiKey.name,
+        key: apiKey.key,
+        createdAt: apiKey.createdAt,
+        isActive: apiKey.isActive,
+      },
+    }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Create API key error:", error);
+    return new Response(JSON.stringify({
+      error: "Failed to create API key",
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+async function handleDeleteApiKey(req: Request, apiKeyId: string): Promise<Response> {
+  const auth = await authenticateRequest(req);
+  if (!auth) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    // Verify the API key belongs to the authenticated user
+    const userApiKeys = await getUserApiKeys(auth.userId);
+    const apiKeyExists = userApiKeys.some(key => key.id === apiKeyId);
+
+    if (!apiKeyExists) {
+      return new Response(JSON.stringify({ error: "API key not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const deleted = await deleteApiKey(apiKeyId);
+    if (!deleted) {
+      return new Response(JSON.stringify({ error: "Failed to delete API key" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Delete API key error:", error);
+    return new Response(JSON.stringify({
+      error: "Failed to delete API key",
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
 
 console.log(`🚀 Server starting on http://localhost:${PORT}`);

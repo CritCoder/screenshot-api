@@ -127,6 +127,20 @@ export async function getUserApiKeys(userId: string): Promise<ApiKey[]> {
   return apiKeys;
 }
 
+export async function deleteApiKey(apiKeyId: string): Promise<boolean> {
+  // First get the API key to find its key value
+  const apiKeyResult = await kv.get<ApiKey>(["api_keys", apiKeyId]);
+  if (!apiKeyResult.value) return false;
+
+  const apiKey = apiKeyResult.value;
+
+  // Delete both the main record and the key lookup record
+  await kv.delete(["api_keys", apiKeyId]);
+  await kv.delete(["api_keys_by_key", apiKey.key]);
+
+  return true;
+}
+
 // Screenshot Request operations
 export async function createScreenshotRequest(request: Omit<ScreenshotRequest, "id" | "createdAt">): Promise<ScreenshotRequest> {
   const id = crypto.randomUUID();
