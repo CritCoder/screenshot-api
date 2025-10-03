@@ -17,7 +17,9 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = 'http://localhost:3000/api';
+  const API_BASE = process.env.NODE_ENV === 'production' 
+    ? 'https://screenshot.support/api' 
+    : 'http://localhost:3000/api';
 
   // Configure axios defaults
   useEffect(() => {

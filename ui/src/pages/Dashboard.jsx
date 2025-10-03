@@ -175,7 +175,7 @@ const Dashboard = () => {
                         {request.status === 'completed' && request.type === 'screenshot' && request.filePath ? (
                           <div className="flex-shrink-0 w-16 h-12 bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
                             <img 
-                              src={`http://localhost:3000${request.filePath}`}
+                              src={`${process.env.NODE_ENV === 'production' ? 'https://screenshot.support' : 'http://localhost:3000'}${request.filePath}`}
                               alt="Screenshot thumbnail"
                               className="w-full h-full object-cover"
                               onError={(e) => {
