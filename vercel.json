@@ -19,11 +19,20 @@
       "dest": "src/server.js"
     },
     {
+      "src": "/uploads/(.*)",
+      "dest": "src/server.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "ui/dist/$1"
     }
   ],
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/server.js": {
+      "maxDuration": 30
+    }
   }
 }
