@@ -255,7 +255,7 @@ const History = () => {
                         {request.status === 'completed' && request.type === 'screenshot' && request.filePath ? (
                           <div className="flex-shrink-0 w-20 h-16 bg-gray-100 rounded-md overflow-hidden">
                             <img 
-                              src={`${process.env.NODE_ENV === 'production' ? 'https://screenshot.support' : 'http://localhost:3000'}${request.filePath}`}
+                              src={`${process.env.NODE_ENV === 'production' ? 'https://ssapi-deno.deno.dev' : 'http://localhost:8000'}${request.filePath}`}
                               alt="Screenshot thumbnail"
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -319,7 +319,7 @@ const History = () => {
                         {request.filePath && request.status === 'completed' && (
                           <>
                             <a
-                              href={`${process.env.NODE_ENV === 'production' ? 'https://screenshot.support' : 'http://localhost:3000'}${request.filePath}`}
+                              href={`${process.env.NODE_ENV === 'production' ? 'https://ssapi-deno.deno.dev' : 'http://localhost:8000'}${request.filePath}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary-600 hover:text-primary-700 p-2 rounded-md hover:bg-primary-50 transition-colors"
@@ -328,7 +328,7 @@ const History = () => {
                               <ExternalLink className="h-4 w-4" />
                             </a>
                             <a
-                              href={`${process.env.NODE_ENV === 'production' ? 'https://screenshot.support' : 'http://localhost:3000'}${request.filePath}`}
+                              href={`${process.env.NODE_ENV === 'production' ? 'https://ssapi-deno.deno.dev' : 'http://localhost:8000'}${request.filePath}`}
                               download
                               className="text-gray-600 hover:text-gray-700 p-2 rounded-md hover:bg-gray-50 transition-colors"
                               title="Download file"

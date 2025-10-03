@@ -17,9 +17,9 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = process.env.NODE_ENV === 'production' 
-    ? 'https://screenshot.support/api' 
-    : 'http://localhost:3000/api';
+  const API_BASE = process.env.NODE_ENV === 'production'
+    ? 'https://ssapi-deno.deno.dev/api'
+    : 'http://localhost:8000/api';
 
   // Configure axios defaults
   useEffect(() => {
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadProfile = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/auth/profile`);
+      const response = await axios.get(`${API_BASE}/auth/me`);
       setUser(response.data.user);
       setIsAuthenticated(true);
     } catch (error) {

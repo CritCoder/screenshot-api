@@ -729,7 +729,7 @@ print(result)` : 'GET method not supported for PDF generation'
                         <h4 className="font-medium text-gray-900">Preview</h4>
                         <div className="flex space-x-2">
                           <a
-                            href={`http://localhost:3000${result.screenshot.filePath}`}
+                            href={`http://localhost:8000${result.screenshot.filePath}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary-600 hover:text-primary-700 p-2 rounded-md hover:bg-primary-50 transition-colors"
@@ -741,7 +741,7 @@ print(result)` : 'GET method not supported for PDF generation'
                       </div>
                       <div className="border border-gray-200 rounded-md overflow-hidden">
                         <img
-                          src={`http://localhost:3000${result.screenshot.filePath}`}
+                          src={`http://localhost:8000${result.screenshot.filePath}`}
                           alt="Screenshot result"
                           className="w-full max-h-96 object-contain bg-gray-50"
                         />
@@ -760,7 +760,7 @@ print(result)` : 'GET method not supported for PDF generation'
                         <h4 className="font-medium text-gray-900">PDF Generated</h4>
                         <div className="flex space-x-2">
                           <a
-                            href={`http://localhost:3000${result.pdf.filePath}`}
+                            href={`http://localhost:8000${result.pdf.filePath}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded text-sm flex items-center space-x-1 transition-colors"

@@ -3,13 +3,20 @@ import { create, verify, getNumericDate } from "jwt";
 import { encodeBase64 } from "@std/encoding/base64";
 
 const JWT_SECRET = Deno.env.get("JWT_SECRET") || "your-secret-key";
-const key = await crypto.subtle.importKey(
-  "raw",
-  new TextEncoder().encode(JWT_SECRET),
-  { name: "HMAC", hash: "SHA-256" },
-  false,
-  ["sign", "verify"]
-);
+let _key: CryptoKey | null = null;
+
+async function getJWTKey(): Promise<CryptoKey> {
+  if (!_key) {
+    _key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(JWT_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign", "verify"]
+    );
+  }
+  return _key;
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
@@ -20,6 +27,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export async function generateJWT(payload: Record<string, unknown>): Promise<string> {
+  const key = await getJWTKey();
   return await create(
     { alg: "HS256", typ: "JWT" },
     {
@@ -32,6 +40,7 @@ export async function generateJWT(payload: Record<string, unknown>): Promise<str
 
 export async function verifyJWT(token: string): Promise<Record<string, unknown> | null> {
   try {
+    const key = await getJWTKey();
     const payload = await verify(token, key);
     return payload;
   } catch {

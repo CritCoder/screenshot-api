@@ -224,7 +224,7 @@ const Docs = () => {
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Base URL</h3>
-              <CodeBlock copyable={true}>http://localhost:3000/api</CodeBlock>
+              <CodeBlock copyable={true}>http://localhost:8000/api</CodeBlock>
             </div>
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Rate Limits</h3>
@@ -266,7 +266,7 @@ const Docs = () => {
 
             <h4 className="font-semibold text-gray-900 dark:text-white mb-3 mt-6">cURL Example</h4>
             <CodeBlock>
-{`curl -X POST http://localhost:3000/api/screenshots \\
+{`curl -X POST http://localhost:8000/api/screenshots \\
   -H "X-API-Key: your_api_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -286,7 +286,7 @@ const Docs = () => {
           >
             <h4 className="font-semibold text-gray-900 dark:text-white mb-3">cURL Example</h4>
             <CodeBlock>
-{`curl -X GET "http://localhost:3000/api/screenshots?url=https://example.com&format=png&width=1920&height=1080&fullPage=true&api_key=your_api_key_here"`}
+{`curl -X GET "http://localhost:8000/api/screenshots?url=https://example.com&format=png&width=1920&height=1080&fullPage=true&api_key=your_api_key_here"`}
             </CodeBlock>
 
             <h4 className="font-semibold text-gray-900 dark:text-white mb-3 mt-6">JavaScript Example</h4>
@@ -300,7 +300,7 @@ const Docs = () => {
   api_key: 'your_api_key_here'
 });
 
-const response = await fetch('http://localhost:3000/api/screenshots?' + params);
+const response = await fetch('http://localhost:8000/api/screenshots?' + params);
 const result = await response.json();`}
             </CodeBlock>
           </EndpointCard>
@@ -339,7 +339,7 @@ const result = await response.json();`}
 
             <h4 className="font-semibold text-gray-900 dark:text-white mb-3 mt-6">cURL Example</h4>
             <CodeBlock>
-{`curl -X POST http://localhost:3000/api/screenshots/pdf \\
+{`curl -X POST http://localhost:8000/api/screenshots/pdf \\
   -H "X-API-Key: your_api_key_here" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -583,7 +583,7 @@ const result = await response.json();`}
 const screenshot = async (url) => {
   try {
     const response = await axios.post(
-      'http://localhost:3000/api/screenshots',
+      'http://localhost:8000/api/screenshots',
       {
         url: url,
         format: 'png',
@@ -618,7 +618,7 @@ screenshot('https://example.com')
 import json
 
 def take_screenshot(url, api_key):
-    endpoint = 'http://localhost:3000/api/screenshots'
+    endpoint = 'http://localhost:8000/api/screenshots'
     
     headers = {
         'X-API-Key': api_key,
