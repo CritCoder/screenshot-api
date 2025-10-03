@@ -23,10 +23,17 @@ export const AuthProvider = ({ children }) => {
 
   // Initialize token from localStorage after component mounts
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
+    try {
+      const storedToken = typeof window !== 'undefined' && window.localStorage
+        ? localStorage.getItem('token')
+        : null;
+      if (storedToken) {
+        setToken(storedToken);
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
       setLoading(false);
     }
   }, []);
@@ -60,12 +67,19 @@ export const AuthProvider = ({ children }) => {
       });
 
       const { token: newToken, user: userData } = response.data;
-      
-      localStorage.setItem('token', newToken);
+
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('token', newToken);
+        }
+      } catch (error) {
+        console.error('Error saving token to localStorage:', error);
+      }
+
       setToken(newToken);
       setUser(userData);
       setIsAuthenticated(true);
-      
+
       return { success: true };
     } catch (error) {
       return { 
@@ -84,12 +98,19 @@ export const AuthProvider = ({ children }) => {
       });
 
       const { token: newToken, user: userData } = response.data;
-      
-      localStorage.setItem('token', newToken);
+
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('token', newToken);
+        }
+      } catch (error) {
+        console.error('Error saving token to localStorage:', error);
+      }
+
       setToken(newToken);
       setUser(userData);
       setIsAuthenticated(true);
-      
+
       return { success: true, apiKey: response.data.apiKey };
     } catch (error) {
       return { 
@@ -100,7 +121,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('token');
+      }
+    } catch (error) {
+      console.error('Error removing token from localStorage:', error);
+    }
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
