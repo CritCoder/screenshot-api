@@ -15,10 +15,24 @@
     "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
     "cors": "https://deno.land/x/cors@v1.2.2/mod.ts"
   },
-  "exclude": ["node_modules", "ui/node_modules", ".vercel"],
+  "exclude": [
+    "node_modules",
+    "ui/node_modules",
+    ".vercel"
+  ],
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["deno.window"],
+    "lib": [
+      "deno.window"
+    ],
     "strict": true
+  },
+  "deploy": {
+    "project": "c949f399-d280-4a7d-92bf-18f0bcdd6367",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "src/server.ts"
   }
 }
