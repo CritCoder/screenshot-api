@@ -7,6 +7,13 @@
       "config": {
         "maxDuration": 30
       }
+    },
+    {
+      "src": "ui/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
@@ -19,8 +26,20 @@
       "dest": "src/server.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/health",
       "dest": "src/server.js"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "ui/dist/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|ico|png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot))",
+      "dest": "ui/dist/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "ui/dist/index.html"
     }
   ],
   "env": {
