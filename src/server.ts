@@ -134,11 +134,6 @@ async function handleAuth(req: Request): Promise<Response> {
     return await handleGetProfile(req);
   }
 
-  if (req.method === "GET" && path === "/test") {
-    return new Response(JSON.stringify({ message: "Auth API is working" }), {
-      headers: { "Content-Type": "application/json" },
-    });
-  }
 
   return new Response(JSON.stringify({ error: "Auth endpoint not found" }), {
     status: 404,
