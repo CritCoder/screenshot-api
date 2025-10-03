@@ -20,7 +20,6 @@
     ".vercel"
   ],
   "compilerOptions": {
-    "allowJs": true,
     "lib": [
       "deno.window"
     ],

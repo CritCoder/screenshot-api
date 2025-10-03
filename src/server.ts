@@ -13,7 +13,7 @@ function addCorsHeaders(response: Response): Response {
     headers,
   });
 }
-import { createUser, getUserByEmail, getUserById, createApiKey, createScreenshotRequest, getUserScreenshots, getApiKeyByKey } from "./db/kv.ts";
+import { createUser, getUserByEmail, getUserById, createApiKey, createScreenshotRequest, getUserScreenshots, getApiKeyByKey, getUserApiKeys } from "./db/kv.ts";
 import { hashPassword, verifyPassword, generateJWT, authenticateRequest, generateApiKey } from "./utils/auth.ts";
 import { parseJsonBody, registerSchema, loginSchema, screenshotSchema } from "./utils/validation.ts";
 
@@ -141,9 +141,18 @@ async function handleAuth(req: Request): Promise<Response> {
   });
 }
 
-// Screenshots handler placeholder
+// Screenshots handler
 async function handleScreenshots(req: Request): Promise<Response> {
   const url = new URL(req.url);
+  const path = url.pathname.replace("/api/screenshots", "");
+
+  if (req.method === "GET" && path === "/usage") {
+    return await handleUsageStats(req);
+  }
+
+  if (req.method === "GET" && path === "/history") {
+    return await handleHistory(req);
+  }
 
   if (req.method === "POST") {
     // Screenshot creation logic will go here
@@ -161,6 +170,29 @@ async function handleScreenshots(req: Request): Promise<Response> {
 
   return new Response(JSON.stringify({ error: "Screenshot endpoint not found" }), {
     status: 404,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+// Handle usage stats endpoint
+async function handleUsageStats(req: Request): Promise<Response> {
+  // For now, return mock data until we implement real usage tracking
+  return new Response(JSON.stringify({
+    totalRequests: 0,
+    requestsThisMonth: 0,
+    creditsUsed: 0,
+    creditsRemaining: 100
+  }), {
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+// Handle history endpoint
+async function handleHistory(req: Request): Promise<Response> {
+  // For now, return empty array until we implement real history
+  return new Response(JSON.stringify({
+    requests: []
+  }), {
     headers: { "Content-Type": "application/json" },
   });
 }
@@ -197,6 +229,15 @@ async function handleRegister(req: Request): Promise<Response> {
       credits: 100,
     });
 
+    // Generate API key for the new user
+    const apiKeyData = await generateApiKey();
+    const apiKey = await createApiKey({
+      userId: user.id,
+      name: "Default API Key",
+      key: apiKeyData,
+      isActive: true,
+    });
+
     // Generate JWT
     const token = await generateJWT({ userId: user.id, email: user.email });
 
@@ -209,6 +250,7 @@ async function handleRegister(req: Request): Promise<Response> {
         credits: user.credits,
       },
       token,
+      apiKey: apiKey.key,
     }), {
       headers: { "Content-Type": "application/json" },
     });
@@ -278,6 +320,9 @@ async function handleGetProfile(req: Request): Promise<Response> {
     });
   }
 
+  // Get user's API keys
+  const apiKeys = await getUserApiKeys(user.id);
+
   return new Response(JSON.stringify({
     user: {
       id: user.id,
@@ -285,6 +330,7 @@ async function handleGetProfile(req: Request): Promise<Response> {
       name: user.name,
       plan: user.plan,
       credits: user.credits,
+      apiKeys: apiKeys,
     },
   }), {
     headers: { "Content-Type": "application/json" },

@@ -14,20 +14,28 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = process.env.NODE_ENV === 'production'
-    ? 'https://ssapi-deno.deno.dev/api'
-    : 'http://localhost:8000/api';
+  const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : `${window.location.protocol}//${window.location.host}/api`;
+
+  // Initialize token from localStorage after component mounts
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   // Configure axios defaults
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       loadProfile();
-    } else {
-      setLoading(false);
     }
   }, [token]);
 
