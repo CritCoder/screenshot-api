@@ -31,6 +31,8 @@ uploads/
 # Build directories
 dist/
 build/
+# Allow ui/dist for Deno Deploy
+!ui/dist/
 
 # IDE
 .vscode/
