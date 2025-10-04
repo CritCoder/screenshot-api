@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api'
+    ? 'http://localhost:3000/api'
     : `${window.location.protocol}//${window.location.host}/api`;
 
   // Initialize token from localStorage after component mounts
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const loadProfile = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/auth/me`);
+      const response = await axios.get(`${API_BASE}/auth/profile`);
       setUser(response.data.user);
       setIsAuthenticated(true);
     } catch (error) {
